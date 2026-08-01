@@ -32,6 +32,16 @@ struct Patch {
     bool resolved;
 };
 
+struct Define {
+    char name[32];
+    struct Token value;
+};
+
+struct DefineTable {
+    struct Define defines[256];
+    uint8_t n_defines;
+};
+
 struct Context {
     uint8_t out[65536];
     size_t out_size;

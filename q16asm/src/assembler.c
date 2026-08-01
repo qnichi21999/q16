@@ -25,7 +25,7 @@ static const struct Op OPS[] = {
     { "POP",   OP_POP,   ARG_R      },
     { "CALL",  OP_CALL,  ARG_I      },
     { "RET",   OP_RET,   ARG_N      },
-    { "OUT",   OP_OUT,   ARG_R      },
+    { "OUT",   OP_OUT,   ARG_R      }
 };
 static const size_t N_OPS = sizeof(OPS) / sizeof(OPS[0]);
 
@@ -53,8 +53,9 @@ struct Op *find_op(struct Token *token)
     for (int i = 0; i < N_OPS; ++i)
     {
         if (token->len == strlen(OPS[i].name) &&
-            strncasecmp(token->start, OPS[i].name, token->len) == 0) {
-                return &OPS[i];
+            strncasecmp(token->start, OPS[i].name, token->len) == 0)
+        {
+            return &OPS[i];
         }
     }
     return NULL;
@@ -111,9 +112,11 @@ void resolve_patches(struct Context *ctx)
 
 void assemble_line(struct Context *ctx, struct Token *tokens)
 {
-    if (tokens[0].kind == TK_DOT || tokens[0].kind == TK_PERCENT)
+    printf("\n\n%d\n", tokens[0].kind);
+    if (tokens[0].kind == TK_DOT)
     {
-        directive(ctx, tokens);
+        assemble_directive(ctx, tokens);
+        printf("byte directive\n");
         return;
     } else if (tokens[0].kind != TK_IDENT) {
         return;
@@ -157,12 +160,12 @@ void assemble_line(struct Context *ctx, struct Token *tokens)
         case ARG_R_R: {
             int reg_a = parse_register(&tokens[1]);
             if (tokens[2].kind != TK_COMMA) {
-                fprintf(stderr, "expected ','\n");
+                fprintf(stderr, "Expected ','\n");
                 return;
             }
             int reg_b = parse_register(&tokens[3]);
             if (reg_a == -1 || reg_b == -1) {
-                fprintf(stderr, "bad register\n");
+                fprintf(stderr, "Bad register\n");
                 return;
             }
             emit_type_a(ctx->out, &(ctx->out_size), op->opcode, reg_a, reg_b);
@@ -195,7 +198,7 @@ void assemble_line(struct Context *ctx, struct Token *tokens)
             {
                 if (tokens[3].kind != TK_NUMBER)
                 {
-                    fprintf(stderr, "expected number\n");
+                    fprintf(stderr, "Expected number\n");
                     return;
                 }
                 else
@@ -229,7 +232,7 @@ void assemble_line(struct Context *ctx, struct Token *tokens)
             {
                 if (tokens[1].kind != TK_NUMBER)
                 {
-                    fprintf(stderr, "expected number\n");
+                    fprintf(stderr, "Expected number\n");
                     return;
                 }
                 else
@@ -246,16 +249,16 @@ void assemble_line(struct Context *ctx, struct Token *tokens)
             uint16_t imm = 0;
             int reg_a = parse_register(&tokens[1]);
             if (tokens[2].kind != TK_COMMA) {
-                fprintf(stderr, "expected ','\n");
+                fprintf(stderr, "Expected ','\n");
                 return;
             }
             int reg_b = parse_register(&tokens[3]);
             if (tokens[4].kind != TK_COMMA) {
-                fprintf(stderr, "expected ','\n");
+                fprintf(stderr, "Expected ','\n");
                 return;
             }
             if (reg_a == -1 || reg_b == -1) {
-                fprintf(stderr, "bad register\n");
+                fprintf(stderr, "Bad register\n");
                 return;
             }
             
@@ -279,7 +282,7 @@ void assemble_line(struct Context *ctx, struct Token *tokens)
             {
                 if (tokens[5].kind != TK_NUMBER)
                 {
-                    fprintf(stderr, "expected number\n");
+                    fprintf(stderr, "Expected number\n");
                     return;
                 }
                 else
@@ -293,20 +296,20 @@ void assemble_line(struct Context *ctx, struct Token *tokens)
         case ARG_R_BR_R: {
             int reg_a = parse_register(&tokens[1]);
             if (tokens[2].kind != TK_COMMA) {
-                fprintf(stderr, "expected ','\n");
+                fprintf(stderr, "Expected ','\n");
                 return;
             }
             if (tokens[3].kind != TK_LBRACKET) {
-                fprintf(stderr, "expected '['\n");
+                fprintf(stderr, "Expected '['\n");
                 return;
             }
             int reg_b = parse_register(&tokens[4]);
             if (reg_a == -1 || reg_b == -1) {
-                fprintf(stderr, "bad register\n");
+                fprintf(stderr, "Bad register\n");
                 return;
             }
             if (tokens[5].kind != TK_RBRACKET) {
-                fprintf(stderr, "expected ']'\n");
+                fprintf(stderr, "Expected ']'\n");
                 return;
             }
             if (op->opcode == OP_LOAD)
