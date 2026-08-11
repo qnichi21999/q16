@@ -8,7 +8,9 @@ Numbers:
     bin 0b01001010
 
 Directives:
-    .org ADDRESS 
+    .org ADDRESS
+    .byte NUMBER
+    %define IDENT NUMBER
     todo: more
 
 ISA:
