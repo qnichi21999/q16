@@ -151,6 +151,10 @@ void assemble_line(struct Context *ctx, struct Token *tokens)
             }
             
         }
+        if (tokens[2].kind == TK_DOT)
+        {
+            assemble_directive(ctx, &(tokens[2]));
+        }
         return;
     }
 

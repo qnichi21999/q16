@@ -91,6 +91,18 @@ size_t tokenize(const char *src, struct Token *out) {
             p++;
             continue;
         }
+        if (*p == '\'')
+        {
+            out[n++] = (struct Token){TK_QUOTE, p, 1, 0};
+            p++;
+            continue;
+        }
+        if (*p == '\"')
+        {
+            out[n++] = (struct Token){TK_DQUOTE, p, 1, 0};
+            p++;
+            continue;
+        }
         if (*p == '\n')
         {
             out[n++] = (struct Token){TK_EOL, p, 1, 0};

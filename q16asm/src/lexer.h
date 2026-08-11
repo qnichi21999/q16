@@ -21,6 +21,8 @@ enum TokenKind {
     TK_SLASH,
     TK_LPAREN,
     TK_RPAREN,
+    TK_QUOTE,
+    TK_DQUOTE,
     TK_EOL
 };
 

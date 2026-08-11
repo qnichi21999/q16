@@ -5,6 +5,8 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdbool.h>
+#include <stdlib.h>
+
 #define N_ASSEMBLE_DIRECTIVES 2
 #define N_PREPROCESS_DIRECTIVES 1
 
@@ -57,19 +59,63 @@ void dir_org(struct Context *ctx, struct Token *tokens)
     return;
 }
 
+char process_char(struct Token *tokens)
+{
+    if (*(tokens[0].start) > 255)
+    {
+        fprintf(stderr, "Failed to process .byte directive: given character must be in ASCII range\n");
+        exit(1);
+    }
+    if (tokens[1].kind != TK_QUOTE)
+    {
+        fprintf(stderr, "Failed to process .byte directive: missing closing \'\n");
+        exit(1);
+    }
+    return *(tokens[0].start);
+}
+
 void dir_byte(struct Context *ctx, struct Token *tokens)
 {
-    if (tokens[0].kind != TK_NUMBER)
+    if (tokens[0].kind != TK_NUMBER && tokens[0].kind != TK_QUOTE)
     {
-        fprintf(stderr, "Failed to process byte directive: byte must be a number\n");
-        return;
+        fprintf(stderr, "Failed to process .byte directive: byte must be a number or a character\n");
+        exit(1);
     }
-    if (tokens[0].value > 255)
+    int n = 0;
+    struct Token argument[32] = {0};
+    struct Token *tok = tokens;
+    while (1)
     {
-        fprintf(stderr, "Failed to process byte directive: given value must not exceed 255\n");
-        return;
+        if (tok->kind == TK_COMMA || tok->kind == TK_EOL || tok->kind == TK_EOF)
+        {
+            argument[n] = (struct Token){TK_EOL, NULL, 0, 0};
+            if (argument[0].kind == TK_NUMBER || argument[0].kind == TK_LPAREN)
+            {
+                uint16_t value = evaluate(argument[0].value, argument);
+                if (value > 255)
+                {
+                    fprintf(stderr, "Failed to process .byte directive: given value must not exceed 255\n");
+                    exit(1);
+                }
+                emit_byte(&(ctx->out), &(ctx->out_size), (uint8_t)value);
+            }
+            else if (argument[0].kind == TK_QUOTE)
+            {
+                emit_byte(&(ctx->out), &(ctx->out_size), (uint8_t)process_char(&(argument[1])));
+            }
+            if (tok->kind == TK_EOL || tok->kind == TK_EOF) return;
+
+            memset(argument, 0, sizeof(argument));
+            n = 0;
+            tok++;
+        }
+        else
+        {
+           argument[n] = *tok;
+           n++;
+           tok++;
+        }
     }
-    ctx->out[ctx->out_size++] = evaluate(tokens[0].value, tokens);
     return;
 }
 
