@@ -5,6 +5,9 @@
 #define TEXT_END 0x7FF
 #define HEAP_START 0x8000
 #define HEAP_END 0xDFFF
+#define push(sp, value) (*(sp)++ = (value))
+#define pop(sp)         (*--(sp))
+#define peek(sp) (*((sp) - 1))
 
 #include <stdint.h>
 

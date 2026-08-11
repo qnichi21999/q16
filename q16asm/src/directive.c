@@ -1,6 +1,7 @@
 #include "lexer.h"
 #include "assembler.h"
 #include "directive.h"
+#include "evaluate.h"
 #include <stdio.h>
 #include <string.h>
 #include <stdbool.h>
@@ -14,7 +15,7 @@ struct Define *find_define(const char *name)
     for (int i = 0; i < define_table.n_defines; ++i)
     {
        
-        if (!(strncmp(define_table.defines[i].name, name, strlen(name))))
+        if (!(strcmp(define_table.defines[i].name, name)))
         {
             return &(define_table.defines[i]);
         }
@@ -45,14 +46,14 @@ void dir_define(struct Context *ctx, struct Token *tokens)
     return;
 }
 
-void dir_org(struct Context *ctx, struct Token *address)
+void dir_org(struct Context *ctx, struct Token *tokens)
 {
-    if (address->kind != TK_NUMBER)
+    if (tokens->kind != TK_NUMBER)
     {
         fprintf(stderr, "Failed to process org directive: address must be a number\n");
         return;
     }
-    ctx->base_address = address->value;
+    ctx->base_address = evaluate(tokens[0].value, tokens);
     return;
 }
 
@@ -68,7 +69,7 @@ void dir_byte(struct Context *ctx, struct Token *tokens)
         fprintf(stderr, "Failed to process byte directive: given value must not exceed 255\n");
         return;
     }
-    ctx->out[ctx->out_size++] = tokens[0].value;
+    ctx->out[ctx->out_size++] = evaluate(tokens[0].value, tokens);
     return;
 }
 

@@ -43,6 +43,18 @@ size_t tokenize(const char *src, struct Token *out) {
             p++;
             continue;
         }
+        if (*p == '(')
+        {
+            out[n++] = (struct Token){TK_LPAREN, p, 1, 0};
+            p++;
+            continue;
+        }
+        if (*p == ')')
+        {
+            out[n++] = (struct Token){TK_RPAREN, p, 1, 0};
+            p++;
+            continue;
+        }
         if (*p == '.')
         {
             out[n++] = (struct Token){TK_DOT, p, 1, 0};
@@ -52,6 +64,30 @@ size_t tokenize(const char *src, struct Token *out) {
         if (*p == '%')
         {
             out[n++] = (struct Token){TK_PERCENT, p, 1, 0};
+            p++;
+            continue;
+        }
+        if (*p == '+')
+        {
+            out[n++] = (struct Token){TK_PLUS, p, 1, 0};
+            p++;
+            continue;
+        }
+        if (*p == '-')
+        {
+            out[n++] = (struct Token){TK_MINUS, p, 1, 0};
+            p++;
+            continue;
+        }
+        if (*p == '*')
+        {
+            out[n++] = (struct Token){TK_STAR, p, 1, 0};
+            p++;
+            continue;
+        }
+        if (*p == '/')
+        {
+            out[n++] = (struct Token){TK_SLASH, p, 1, 0};
             p++;
             continue;
         }

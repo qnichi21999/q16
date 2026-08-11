@@ -28,6 +28,7 @@ struct Label {
 
 struct Patch {
     char name[32];
+    struct Token line[32];
     uint16_t offset;
     bool resolved;
 };

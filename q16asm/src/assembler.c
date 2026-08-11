@@ -6,6 +6,7 @@
 #include "stdlib.h"
 #include "stdio.h"
 #include "directive.h"
+#include "evaluate.h"
 
 static const struct Op OPS[] = {
     { "HALT",  OP_HALT,  ARG_N      },
@@ -78,7 +79,7 @@ struct Label *find_label(struct Context *ctx, const char *name)
 {
     for (int i = 0; i < ctx->n_labels; ++i)
     {
-        if (!(strncmp(ctx->labels[i].name, name, strlen(name))))
+        if (!(strcmp(ctx->labels[i].name, name)))
         {
             return &(ctx->labels[i]);
         }
@@ -91,6 +92,13 @@ void add_patch(struct Context *ctx, struct Token *token)
     memcpy(&(ctx->patches[ctx->n_patches].name), token->start, token->len);
     ctx->patches[ctx->n_patches].name[token->len] = '\0';
     ctx->patches[ctx->n_patches].offset = ctx->out_size+2;
+    size_t i = 0;
+    while (token->kind != TK_EOL && token->kind != TK_EOF) {
+        ctx->patches[ctx->n_patches].line[i] = *token;
+        token++;
+        i++;
+    }
+    ctx->patches[ctx->n_patches].line[i] = *token;
     ctx->n_patches++;
 }
 
@@ -101,22 +109,22 @@ void resolve_patches(struct Context *ctx)
         struct Label *label = find_label(ctx, ctx->patches[i].name);
         if (!label)
         {
-           fprintf(stderr, "Unresolved label '%s'", ctx->patches[i].name);
+           fprintf(stderr, "Unresolved label '%.*s'\n", strlen(ctx->patches[i].name), ctx->patches[i].name);
            return; 
         }
-        ctx->out[ctx->patches[i].offset] = (uint8_t)(label->address >> 8);
-        ctx->out[ctx->patches[i].offset+1] = (uint8_t)(label->address);
+        fprintf(stderr, "Label '%.*s' resolved\n", strlen(ctx->patches[i].name), ctx->patches[i].name);
+        uint16_t address = evaluate(label->address, &(ctx->patches[i].line[1]));
+        ctx->out[ctx->patches[i].offset] = (uint8_t)(address >> 8);
+        ctx->out[ctx->patches[i].offset+1] = (uint8_t)(address);
 
     }
 }
 
 void assemble_line(struct Context *ctx, struct Token *tokens)
 {
-    printf("\n\n%d\n", tokens[0].kind);
     if (tokens[0].kind == TK_DOT)
     {
         assemble_directive(ctx, tokens);
-        printf("byte directive\n");
         return;
     } else if (tokens[0].kind != TK_IDENT) {
         return;
@@ -181,8 +189,8 @@ void assemble_line(struct Context *ctx, struct Token *tokens)
             if (tokens[3].kind == TK_IDENT)
             {
                 char name[32];
-                strncpy(name, tokens[3].start, 32);
-                name[31] = 0;
+                strncpy(name, tokens[3].start, tokens[3].len);
+                name[tokens[3].len] = 0;
                 struct Label *label = find_label(ctx, name);
                 if (!label)
                 {
@@ -191,19 +199,19 @@ void assemble_line(struct Context *ctx, struct Token *tokens)
                 }
                 else
                 {
-                    imm = label->address;
+                    imm = evaluate(label->address, &(tokens[3]));
                 }
             }
             else
             {
-                if (tokens[3].kind != TK_NUMBER)
+                if (tokens[3].kind != TK_NUMBER && tokens[3].kind != TK_LPAREN)
                 {
                     fprintf(stderr, "Expected number\n");
                     return;
                 }
                 else
                 {
-                    imm = tokens[3].value;
+                    imm = evaluate(tokens[3].value, &(tokens[3]));
                 }
             }
 
@@ -215,8 +223,8 @@ void assemble_line(struct Context *ctx, struct Token *tokens)
             if (tokens[1].kind == TK_IDENT)
             { 
                 char name[32];
-                strncpy(name, tokens[1].start, 32);
-                name[31] = 0;
+                strncpy(name, tokens[1].start, tokens[1].len);
+                name[tokens[1].len] = 0;
                 struct Label *label = find_label(ctx, name);
                 if (!label)
                 {
@@ -225,19 +233,19 @@ void assemble_line(struct Context *ctx, struct Token *tokens)
                 }
                 else
                 {
-                    imm = label->address;
+                    imm = evaluate(label->address, &(tokens[1]));
                 }
             }
             else
             {
-                if (tokens[1].kind != TK_NUMBER)
+                if (tokens[1].kind != TK_NUMBER && tokens[1].kind != TK_NUMBER)
                 {
                     fprintf(stderr, "Expected number\n");
                     return;
                 }
                 else
                 {
-                    imm = tokens[1].value;
+                    imm = evaluate(tokens[1].value, &(tokens[1]));
                 }
             }
             
@@ -265,8 +273,8 @@ void assemble_line(struct Context *ctx, struct Token *tokens)
             if (tokens[5].kind == TK_IDENT)
             {
                 char name[32];
-                strncpy(name, tokens[1].start, 32);
-                name[31] = 0;
+                strncpy(name, tokens[1].start, tokens[1].len);
+                name[tokens[1].len] = 0;
                 struct Label *label = find_label(ctx, name);
                 if (!label)
                 {
@@ -275,19 +283,19 @@ void assemble_line(struct Context *ctx, struct Token *tokens)
                 }
                 else
                 {
-                    imm = label->address;
+                    imm = evaluate(label->address, &(tokens[5]));
                 }
             }
             else
             {
-                if (tokens[5].kind != TK_NUMBER)
+                if (tokens[5].kind != TK_NUMBER && tokens[5].kind != TK_LPAREN)
                 {
                     fprintf(stderr, "Expected number\n");
                     return;
                 }
                 else
                 {
-                    imm = tokens[5].value;
+                    imm = evaluate(tokens[5].value, &(tokens[5]));
                 }
             }
             emit_type_b(ctx->out, &(ctx->out_size), op->opcode, reg_a, reg_b, imm);

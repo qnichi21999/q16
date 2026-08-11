@@ -15,6 +15,12 @@ enum TokenKind {
     TK_RBRACKET,
     TK_DOT,
     TK_PERCENT,
+    TK_PLUS,
+    TK_MINUS,
+    TK_STAR,
+    TK_SLASH,
+    TK_LPAREN,
+    TK_RPAREN,
     TK_EOL
 };
 
