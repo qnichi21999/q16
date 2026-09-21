@@ -12,7 +12,8 @@ enum Arg {
     ARG_R_R,       // MOV, ADD, SUB, AND, OR
     ARG_R_I,       // SET, LSH
     ARG_R_R_I,     // JE, JG
-    ARG_R_BR_R,    // LOAD, STORE
+    ARG_R_BR_R,    // LOAD, STORE (obsolete)
+    ARG_R_BR_R_I,    // LOAD, STORE
 };
 
 struct Op {

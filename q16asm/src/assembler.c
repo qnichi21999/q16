@@ -12,8 +12,8 @@ static const struct Op OPS[] = {
     { "HALT",  OP_HALT,  ARG_N      },
     { "SET",   OP_SET,   ARG_R_I    },
     { "MOV",   OP_MOV,   ARG_R_R    },
-    { "LOAD",  OP_LOAD,  ARG_R_BR_R },
-    { "STORE", OP_STORE, ARG_R_BR_R },
+    { "LOAD",  OP_LOAD,  ARG_R_BR_R_I },
+    { "STORE", OP_STORE, ARG_R_BR_R_I },
     { "ADD",   OP_ADD,   ARG_R_R    },
     { "SUB",   OP_SUB,   ARG_R_R    },
     { "AND",   OP_AND,   ARG_R_R    },
@@ -64,7 +64,7 @@ struct Op *find_op(struct Token *token)
 
 int parse_register(struct Token *token)
 {
-    if(token->start[0] != 'r' && token->start[0] != 'R') return -1;
+    if(token->start[0] != 'r' && token->start[0] != 'R' && token->start[0] != 'S') return -1;
     if(token->len != 2) return -1;
     if(token->start[1] >= '0' && token->start[1] <= '7')
     {
@@ -277,8 +277,8 @@ void assemble_line(struct Context *ctx, struct Token *tokens)
             if (tokens[5].kind == TK_IDENT)
             {
                 char name[32];
-                strncpy(name, tokens[1].start, tokens[1].len);
-                name[tokens[1].len] = 0;
+                strncpy(name, tokens[5].start, tokens[5].len);
+                name[tokens[5].len] = 0;
                 struct Label *label = find_label(ctx, name);
                 if (!label)
                 {
@@ -332,6 +332,66 @@ void assemble_line(struct Context *ctx, struct Token *tokens)
             emit_type_a(ctx->out, &(ctx->out_size), op->opcode, reg_b, reg_a);
             break;
 
+        }
+
+        case ARG_R_BR_R_I: {
+            uint16_t imm = 0;
+            int reg_a = parse_register(&tokens[1]);
+            if (tokens[2].kind != TK_COMMA) {
+                fprintf(stderr, "Expected ','\n");
+                return;
+            }
+            if (tokens[3].kind != TK_LBRACKET) {
+                fprintf(stderr, "Expected '['\n");
+                return;
+            }
+            int reg_b = parse_register(&tokens[4]);
+            if (reg_a == -1 || reg_b == -1) {
+                fprintf(stderr, "Bad register\n");
+                return;
+            }
+            if (tokens[5].kind != TK_RBRACKET) {
+                fprintf(stderr, "Expected ']'\n");
+                return;
+            }
+            if (tokens[6].kind != TK_COMMA) {
+                fprintf(stderr, "Expected ','\n");
+                return;
+            }
+            if (tokens[7].kind == TK_IDENT)
+            {
+                char name[32];
+                strncpy(name, tokens[7].start, tokens[7].len);
+                name[tokens[7].len] = 0;
+                struct Label *label = find_label(ctx, name);
+                if (!label)
+                {
+                    fprintf(stderr, "Potentially unresolved label '%.*s'\n", tokens[7].len, tokens[7].start);
+                    add_patch(ctx, &(tokens[7]));
+                }
+                else
+                {
+                    imm = evaluate(label->address, &(tokens[7]));
+                }
+            }
+            else
+            {
+                if (tokens[7].kind != TK_NUMBER && tokens[7].kind != TK_LPAREN)
+                {
+                    fprintf(stderr, "Expected number\n");
+                    return;
+                }
+                else
+                {
+                    imm = evaluate(tokens[7].value, &(tokens[7]));
+                }
+            }
+            if (op->opcode == OP_LOAD)
+            {
+                emit_type_b(ctx->out, &(ctx->out_size), op->opcode, reg_a, reg_b, imm);
+                break;
+            }
+            emit_type_b(ctx->out, &(ctx->out_size), op->opcode, reg_b, reg_a, imm);
         }
 
     }

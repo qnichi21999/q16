@@ -5,6 +5,8 @@
 #include "assembler.h"
 #include "preprocessor.h"
 #include <string.h>
+#include "stdlib.h"
+
 
 int main(int argc, char *argv[]) {
     if (argc == 1)
@@ -45,12 +47,19 @@ int main(int argc, char *argv[]) {
         fclose(input_file);
         return 1;
     }
+    fseek(input_file, 0, SEEK_END);
+    long file_size = ftell(input_file);
+    fseek(input_file, 0, SEEK_SET);
 
+    char *input = malloc((size_t)file_size + 1);
+
+    size_t input_size = fread(input, 1, (size_t)file_size, input_file);
+    input[input_size] = '\0';
     struct Context ctx = {0};
     ctx.base_address = 0x0400;
     struct Token tokens[65536];
-    char input[65536];
-    fread(input, sizeof(char), 65536, input_file);
+    // char input[65536];
+    // fread(input, sizeof(char), 65536, input_file);
     tokenize(input, tokens);
 
     struct Token line[32];
