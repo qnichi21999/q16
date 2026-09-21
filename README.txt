@@ -41,11 +41,13 @@ Data:
                                 reg_a = DST
 0x02 MOV   Rd, Rs     (16-bit)  Rd = Rs.
                                 reg_a = DST, reg_b = SRC
-0x03 LOAD  Rd, [Rs]   (16-bit)  Rd = Memory[Rs].
-                                reg_a = DST, reg_b = ADDR
-0x04 STORE Rs, [Rd]   (16-bit)  Memory[Rd] = Rs.
-                                reg_a = ADDR, reg_b = SRC
+0x03 LOAD  Rd, [Rs], IMM   (16-bit)  Rd = Memory[Rs].
+                                reg_a = DST, reg_b = ADDR + IMM
+0x04 STORE Rs, [Rd], IMM   (16-bit)  Memory[Rd] = Rs.
+                                reg_a = ADDR + IMM, reg_b = SRC
                                   (note: assembly syntax order is inverted relative to encoding)
+
+
 
 Logic and maths:
 0x05 ADD   Rd, Rs     (16-bit)  Rd = Rd + Rs.
@@ -72,3 +74,9 @@ Control flow:
                                 reg_a = DST
 0x0F CALL  ADDR       (32-bit)  Push(PC); PC = IMM.
 0x10 RET              (16-bit)  PC = Pop()
+
+r0 = 0
+r1-r4 = general purpose / arguments
+r5 = scratch
+r6 = SP
+r7 = RA
