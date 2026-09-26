@@ -84,7 +84,7 @@ struct AstNode {
         } expr_stmt;
 
         struct {
-            struct AstNode *name;
+            struct Token *name;
             struct Type type;
         } parameter;
 

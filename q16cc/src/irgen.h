@@ -19,7 +19,8 @@ enum IRKind {
 
 enum IRInstructionKind {
     I_RETURN,
-    I_UNARY
+    I_UNARY,
+    I_BINARY
 };
 
 enum VarKind {
@@ -64,6 +65,13 @@ struct IRNode {
                     struct Var src;
                     struct Var dst;
                 } i_unary;
+
+                struct {
+                    enum TokenKind op;
+                    struct Var src1;
+                    struct Var src2;
+                    struct Var dst;
+                } i_binary;
 
                 struct {
                     struct Var return_value;

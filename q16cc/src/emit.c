@@ -7,10 +7,10 @@
 
 void emit_allocate_stack(FILE *f, uint16_t size, size_t tab_count)
 {
-    fprintf(f, "SET R0, %d\n", size);
+    fprintf(f, "SET R5, %d\n", size);
     for (size_t j = 0; j < tab_count; ++j)
         fprintf(f, "    ");
-    fprintf(f, "SUB R7, R0\n");
+    fprintf(f, "SUB R6, R5\n");
 }
 
 void emit_load(FILE *f, struct Operand *dst, struct Operand *address, uint16_t imm)
@@ -35,15 +35,13 @@ void emit_ret(FILE *f)
 
 void emit_neg(FILE *f, struct Operand *reg, size_t tab_count)
 {
-    uint8_t scratch = reg->reg == R0 ? 1 : 0;
-    fprintf(f, "SET R%d, 0\n", scratch);
+    fprintf(f, "SUB R0, R%d\n", reg->reg);
     for (size_t j = 0; j < tab_count; ++j)
         fprintf(f, "    ");
-    fprintf(f, "SUB R%d, R%d\n", scratch, reg->reg);
+    fprintf(f, "MOV R%d, R0\n", reg->reg);
     for (size_t j = 0; j < tab_count; ++j)
         fprintf(f, "    ");
-    fprintf(f, "MOV R%d, R%d\n", reg->reg, scratch);
-
+    fprintf(f, "SET R0, 0\n");
 }
 
 void emit_mov(FILE *f, struct Operand *src, struct Operand *dst)
@@ -51,7 +49,7 @@ void emit_mov(FILE *f, struct Operand *src, struct Operand *dst)
     fprintf(f, "MOV R%d, R%d\n", src->reg, dst->reg);
 }
 
-void emit_asm(const char *output_path, struct AsmNode *node)
+void emit_asm(char *output_path, struct AsmNode *node)
 {
     char *filename = basename(output_path);
     size_t tab_count = 0;
@@ -70,7 +68,7 @@ void emit_asm(const char *output_path, struct AsmNode *node)
     }
 
 
-    fprintf(output_file, ".%.*s\n", node->program.function->function.name->len, node->program.function->function.name->start);
+    fprintf(output_file, ".%.*s\n", (int)node->program.function->function.name->len, node->program.function->function.name->start);
     tab_count++;
     for (size_t i = 0; i < node->program.function->function.instructions->count; ++i)
     {

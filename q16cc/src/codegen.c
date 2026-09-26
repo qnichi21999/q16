@@ -155,7 +155,7 @@ void generate_asm_ir(struct CodeGen *c, struct IRNode *node, struct AsmNodeList 
 
 struct StackTable *find_variable_offset(struct CodeGen *c, const char *name)
 {
-    for (int i = 0; i < c->n_variables; ++i)
+    for (size_t i = 0; i < c->n_variables; ++i)
     {
         if (!(strcmp(c->variables[i].name, name)))
         {
@@ -197,12 +197,12 @@ struct AsmNode *generate_code(struct CodeGen *c, struct IRNode *ir)
     struct Operand *scratch_reg = arena_alloc(c->arena, sizeof(*scratch_reg));
     *scratch_reg = (struct Operand){
         .kind = OP_REGISTER,
-        .reg = R0
+        .reg = R5
     };
     struct Operand *stack_reg = arena_alloc(c->arena, sizeof(*stack_reg));
     *stack_reg = (struct Operand){
         .kind = OP_REGISTER,
-        .reg = R7
+        .reg = R6
     };
 
     if (ir->kind == IR_PROGRAM)
@@ -316,4 +316,5 @@ struct AsmNode *generate_code(struct CodeGen *c, struct IRNode *ir)
         program->program.function->function.instructions = fixed_instructions;
         return program;
     }
+    return NULL;
 }

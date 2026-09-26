@@ -25,7 +25,7 @@ struct Define *find_define(const char *name)
     return NULL;
 }
 
-void dir_define(struct Context *ctx, struct Token *tokens)
+void dir_define([[maybe_unused]] struct Context *ctx, struct Token *tokens)
 {
     if (tokens[0].kind != TK_IDENT)
     {
@@ -33,12 +33,12 @@ void dir_define(struct Context *ctx, struct Token *tokens)
         return;
     }
     char name[32];
-    strncpy(&name, tokens[0].start, tokens[0].len);
-    struct Define *define = find_define(&name);
+    strncpy(name, tokens[0].start, tokens[0].len);
+    struct Define *define = find_define(name);
     
     if (!define)
     {
-        strncpy(&(define_table.defines[define_table.n_defines].name), tokens[0].start, tokens[0].len);
+        strncpy(define_table.defines[define_table.n_defines].name, tokens[0].start, tokens[0].len);
         define_table.defines[define_table.n_defines].name[tokens[0].len] = '\0';
         define_table.defines[define_table.n_defines].value = tokens[1];
         define_table.n_defines++;
@@ -61,11 +61,6 @@ void dir_org(struct Context *ctx, struct Token *tokens)
 
 char process_char(struct Token *tokens)
 {
-    if (*(tokens[0].start) > 255)
-    {
-        fprintf(stderr, "Failed to process .byte directive: given character must be in ASCII range\n");
-        exit(1);
-    }
     if (tokens[1].kind != TK_QUOTE)
     {
         fprintf(stderr, "Failed to process .byte directive: missing closing \'\n");
@@ -97,11 +92,11 @@ void dir_byte(struct Context *ctx, struct Token *tokens)
                     fprintf(stderr, "Failed to process .byte directive: given value must not exceed 255\n");
                     exit(1);
                 }
-                emit_byte(&(ctx->out), &(ctx->out_size), (uint8_t)value);
+                emit_byte(ctx->out, &(ctx->out_size), (uint8_t)value);
             }
             else if (argument[0].kind == TK_QUOTE)
             {
-                emit_byte(&(ctx->out), &(ctx->out_size), (uint8_t)process_char(&(argument[1])));
+                emit_byte(ctx->out, &(ctx->out_size), (uint8_t)process_char(&(argument[1])));
             }
             if (tok->kind == TK_EOL || tok->kind == TK_EOF) return;
 

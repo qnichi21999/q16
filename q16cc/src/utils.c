@@ -85,6 +85,7 @@ void print_ir(struct IRNode *node, size_t tab_count)
             }
             break;
         }
+        default: break;
     }
 }
 
@@ -96,7 +97,7 @@ void print_operand(struct Operand *operand)
     }
     else if (operand->kind == OP_PSEUDO)
     {
-        printf(operand->pseudo);
+        printf("%s", operand->pseudo);
     }
     else if (operand->kind == OP_REGISTER)
     {
@@ -104,7 +105,7 @@ void print_operand(struct Operand *operand)
     }
     else if (operand->kind == OP_STACK)
     {
-        printf("STACK(%d)", operand->stack_offset);
+        printf("STACK(%zu)", operand->stack_offset);
     }
 
 }
@@ -126,7 +127,7 @@ void print_asm_ir(struct AsmNode *node, size_t tab_count)
         case ASM_INSTRUCTION: {
             if (node->instruction.kind == ASM_I_ALLOCATE_STACK)
             {
-                printf("ALLOCATE_STACK %d\n", node->instruction.allocate_stack.size);
+                printf("ALLOCATE_STACK %zu\n", node->instruction.allocate_stack.size);
             }
             else if (node->instruction.kind == ASM_I_MOV)
             {
@@ -168,7 +169,7 @@ void print_asm_ir(struct AsmNode *node, size_t tab_count)
             else if (node->instruction.kind == ASM_I_UNARY)
             {
                 printf("UNARY ");
-                printf(token_kind_name(node->instruction.unary.operator));
+                printf("%s", token_kind_name(node->instruction.unary.operator));
                 printf(" ");
                 print_operand(node->instruction.unary.operand);
                 printf("\n");
@@ -179,6 +180,7 @@ void print_asm_ir(struct AsmNode *node, size_t tab_count)
             }
             break;
         }
+        default: break;
     }
 }
 
@@ -204,7 +206,7 @@ void print_ast(struct AstNode *node, size_t tab_count)
             for (size_t i = 0; i < tab_count + 1; ++i)
                 printf("    ");
 
-            printf("Name(\"%.*s\")\n", node->function_decl_stmt.name->len, node->function_decl_stmt.name->start);
+            printf("Name(\"%.*s\")\n", (int)node->function_decl_stmt.name->len, node->function_decl_stmt.name->start);
 
             for (size_t i = 0; i < tab_count + 1; ++i)
                 printf("    ");
@@ -230,7 +232,8 @@ void print_ast(struct AstNode *node, size_t tab_count)
         case AST_PARAMETER: {
             printf("Parameter:\n");
 
-            print_ast(node->parameter.name, tab_count + 1);
+            // TODO: fix that later
+            // print_ast(node->parameter.name, tab_count + 1);
 
             for (size_t i = 0; i < tab_count + 1; ++i)
                 printf("    ");
@@ -380,7 +383,7 @@ void print_tokens(struct Token *tokens, size_t token_count)
             printf("[%zu] %-10s %.*s %.*s \n",
                 i,
                 token_kind_name(tokens[i].kind),
-                tokens[i].len,
+                (int)tokens[i].len,
                 tokens[i].start,
                 tokens[i].value.str.len,
                 tokens[i].value.str.ptr);
@@ -390,7 +393,7 @@ void print_tokens(struct Token *tokens, size_t token_count)
             printf("[%zu] %-10s \"%.*s\"\n",
                 i,
                 token_kind_name(tokens[i].kind),
-                tokens[i].len,
+                (int)tokens[i].len,
                 tokens[i].start);
         }
     }

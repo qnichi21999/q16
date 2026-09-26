@@ -64,7 +64,7 @@ struct Operand {
     union {
         enum Register reg;
         uint16_t imm;
-        int stack_offset;
+        size_t stack_offset;
         const char *pseudo;
     };
 };

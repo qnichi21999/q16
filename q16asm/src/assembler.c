@@ -8,7 +8,7 @@
 #include "directive.h"
 #include "evaluate.h"
 
-static const struct Op OPS[] = {
+static struct Op OPS[] = {
     { "HALT",  OP_HALT,  ARG_N      },
     { "SET",   OP_SET,   ARG_R_I    },
     { "MOV",   OP_MOV,   ARG_R_R    },
@@ -51,7 +51,7 @@ void emit_type_b(uint8_t *out, size_t *n, uint8_t opcode, uint8_t reg_a, uint8_t
 
 struct Op *find_op(struct Token *token)
 {
-    for (int i = 0; i < N_OPS; ++i)
+    for (size_t i = 0; i < N_OPS; ++i)
     {
         if (token->len == strlen(OPS[i].name) &&
             strncasecmp(token->start, OPS[i].name, token->len) == 0)
@@ -109,10 +109,10 @@ void resolve_patches(struct Context *ctx)
         struct Label *label = find_label(ctx, ctx->patches[i].name);
         if (!label)
         {
-           fprintf(stderr, "Unresolved label '%.*s'\n", strlen(ctx->patches[i].name), ctx->patches[i].name);
+           fprintf(stderr, "Unresolved label '%.*s'\n", (int)strlen(ctx->patches[i].name), ctx->patches[i].name);
            return; 
         }
-        fprintf(stderr, "Label '%.*s' resolved\n", strlen(ctx->patches[i].name), ctx->patches[i].name);
+        fprintf(stderr, "Label '%.*s' resolved\n", (int)strlen(ctx->patches[i].name), ctx->patches[i].name);
         uint16_t address = evaluate(label->address, &(ctx->patches[i].line[1]));
         ctx->out[ctx->patches[i].offset] = (uint8_t)(address >> 8);
         ctx->out[ctx->patches[i].offset+1] = (uint8_t)(address);
@@ -198,7 +198,7 @@ void assemble_line(struct Context *ctx, struct Token *tokens)
                 struct Label *label = find_label(ctx, name);
                 if (!label)
                 {
-                    fprintf(stderr, "Potentially unresolved label '%.*s'\n", tokens[3].len, tokens[3].start);
+                    fprintf(stderr, "Potentially unresolved label '%.*s'\n", (int)tokens[3].len, tokens[3].start);
                     add_patch(ctx, &(tokens[3]));
                 }
                 else
@@ -232,7 +232,7 @@ void assemble_line(struct Context *ctx, struct Token *tokens)
                 struct Label *label = find_label(ctx, name);
                 if (!label)
                 {
-                    fprintf(stderr, "Potentially unresolved label '%.*s'\n", tokens[1].len, tokens[1].start);
+                    fprintf(stderr, "Potentially unresolved label '%.*s'\n", (int)tokens[1].len, tokens[1].start);
                     add_patch(ctx, &(tokens[1]));
                 }
                 else
@@ -282,7 +282,7 @@ void assemble_line(struct Context *ctx, struct Token *tokens)
                 struct Label *label = find_label(ctx, name);
                 if (!label)
                 {
-                    fprintf(stderr, "Potentially unresolved label '%.*s'\n", tokens[5].len, tokens[5].start);
+                    fprintf(stderr, "Potentially unresolved label '%.*s'\n", (int)tokens[5].len, tokens[5].start);
                     add_patch(ctx, &(tokens[5]));
                 }
                 else
@@ -366,7 +366,7 @@ void assemble_line(struct Context *ctx, struct Token *tokens)
                 struct Label *label = find_label(ctx, name);
                 if (!label)
                 {
-                    fprintf(stderr, "Potentially unresolved label '%.*s'\n", tokens[7].len, tokens[7].start);
+                    fprintf(stderr, "Potentially unresolved label '%.*s'\n", (int)tokens[7].len, tokens[7].start);
                     add_patch(ctx, &(tokens[7]));
                 }
                 else

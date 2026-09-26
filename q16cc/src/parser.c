@@ -69,7 +69,7 @@ struct Token *consume(struct Parser *p, enum TokenKind kind, const char *err_msg
 {
     if (!check(p->tokens, kind))
     {
-        fprintf(stderr, err_msg);
+        fprintf(stderr, "%s", err_msg);
         exit(1);
     }
     return advance(p);
@@ -157,7 +157,7 @@ struct AstNode *parse_expr(struct Parser *p, short min_prec)
 struct AstNode *parse_parameter(struct Parser *p)
 {
     struct Type type;
-    struct Token *type_token = advance(p);
+    advance(p);
     if (check(p->tokens, TK_VOID))
     {
         type.kind = TYPE_VOID;
@@ -198,7 +198,7 @@ void parse_parameters(struct Parser *p, struct AstNodeList *list)
 struct AstNode *parse_declaration_stmt(struct Parser *p)
 {
     struct Type type;
-    struct Token *type_token = advance(p);
+    advance(p);
     if (check(p->tokens, TK_VOID))
     {
         type.kind = TYPE_VOID;
@@ -245,7 +245,7 @@ struct AstNode *parse_declaration_stmt(struct Parser *p)
 
 struct AstNode *parse_expression_stmt()
 {
-
+    return NULL;
 }
 
 struct AstNode *parse_block_stmt(struct Parser *p)
@@ -286,6 +286,7 @@ struct AstNode *parse_statement(struct Parser *p)
     }
     
     // else if (check())
+    return NULL;
 }
 
 struct AstNode *parse(struct Parser *p)

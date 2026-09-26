@@ -35,8 +35,6 @@ void execute(CPU *c, uint16_t word)
             uint16_t offset = fetch(c);
             uint16_t address = c->r[reg_b] + offset;
             c->r[reg_a] = ((uint16_t)c->memory[address] << 8) | c->memory[address + 1];
-            printf("LOAD  R%d <- mem[%04x] = %04x\n",
-           reg_a, address, c->r[reg_a]);
             break;
         }
         case OP_STORE:
@@ -45,8 +43,6 @@ void execute(CPU *c, uint16_t word)
             uint16_t address = c->r[reg_a] + offset;
             c->memory[address] = (c->r[reg_b] >> 8) & 0xFF;
             c->memory[address + 1] = c->r[reg_b] & 0xFF;
-            printf("STORE mem[%04x] <- R%d = %04x\n",
-           address, reg_b, c->r[reg_b]);
             break;
         }
 
@@ -120,7 +116,7 @@ void save_to_file(const char *filename, uint8_t *program, size_t size) {
     FILE *f = fopen(filename, "wb");
     if (f == NULL)
     {
-        printf("Cannot open file \"%s\" for writing, aborting");
+        printf("Cannot open file \"%s\" for writing, aborting", filename);
         exit(1);
     }
 
@@ -152,13 +148,7 @@ void load_executable(CPU *c, char *filepath)
     c->memory[0x0000] = entry_point[0];
     c->memory[0x0001] = entry_point[1];
 
-    fread(c->memory+TEXT_START, 1, size-2, f);
-    for (int i = 0; i < 32; i++) {
-    printf("%04x: %02x\n",
-           TEXT_START + i,
-           c->memory[TEXT_START + i]);
-}
-    
+    fread(c->memory+TEXT_START, 1, size-2, f);    
 }
 
 

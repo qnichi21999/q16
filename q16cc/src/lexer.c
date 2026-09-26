@@ -33,67 +33,67 @@ size_t tokenize(const char *src, struct Token *out, struct Context *ctx) {
 
         if (*p == ';')
         {
-            out[n++] = (struct Token){ TK_SEMICOLON, p, 1, 0 }; 
+            out[n++] = (struct Token){ TK_SEMICOLON, p, 1, {0} }; 
             p++; 
             continue;
         }
         if (*p == ',')
         { 
-            out[n++] = (struct Token){ TK_COMMA, p, 1, 0 }; 
+            out[n++] = (struct Token){ TK_COMMA, p, 1, {0} }; 
             p++; 
             continue; 
         }
         if (*p == ':')
         { 
-            out[n++]= (struct Token){ TK_COLON, p, 1, 0 }; 
+            out[n++]= (struct Token){ TK_COLON, p, 1, {0} }; 
             p++;
             continue;
         }
         if (*p == '[')
         {
-            out[n++] = (struct Token){TK_LBRACKET, p, 1, 0};
+            out[n++] = (struct Token){TK_LBRACKET, p, 1, {0} };
             p++;
             continue;
         }
         if (*p == ']')
         {
-            out[n++] = (struct Token){TK_RBRACKET, p, 1, 0};
+            out[n++] = (struct Token){TK_RBRACKET, p, 1, {0} };
             p++;
             continue;
         }
         if (*p == '(')
         {
-            out[n++] = (struct Token){TK_LPAREN, p, 1, 0};
+            out[n++] = (struct Token){TK_LPAREN, p, 1, {0} };
             p++;
             continue;
         }
         if (*p == ')')
         {
-            out[n++] = (struct Token){TK_RPAREN, p, 1, 0};
+            out[n++] = (struct Token){TK_RPAREN, p, 1, {0} };
             p++;
             continue;
         }
         if (*p == '{')
         {
-            out[n++] = (struct Token){TK_LBRACE, p, 1, 0};
+            out[n++] = (struct Token){TK_LBRACE, p, 1, {0} };
             p++;
             continue;
         }
         if (*p == '}')
         {
-            out[n++] = (struct Token){TK_RBRACE, p, 1, 0};
+            out[n++] = (struct Token){TK_RBRACE, p, 1, {0} };
             p++;
             continue;
         }
         if (*p == '.')
         {
-            out[n++] = (struct Token){TK_DOT, p, 1, 0};
+            out[n++] = (struct Token){TK_DOT, p, 1, {0} };
             p++;
             continue;
         }
         if (*p == '%')
         {
-            out[n++] = (struct Token){TK_PERCENT, p, 1, 0};
+            out[n++] = (struct Token){TK_PERCENT, p, 1, {0} };
             p++;
             continue;
         }
@@ -102,11 +102,11 @@ size_t tokenize(const char *src, struct Token *out, struct Context *ctx) {
             p++;
             if (*p == '+')
             {
-                out[n++] = (struct Token){TK_PLUSPLUS, p-1, 2, 0};
+                out[n++] = (struct Token){TK_PLUSPLUS, p-1, 2, {0} };
                 p++;
                 continue;
             }
-            out[n++] = (struct Token){TK_PLUS, p-1, 1, 0};
+            out[n++] = (struct Token){TK_PLUS, p-1, 1, {0} };
             continue;
         }
         if (*p == '-')
@@ -114,28 +114,28 @@ size_t tokenize(const char *src, struct Token *out, struct Context *ctx) {
             p++;
             if (*p == '-')
             {
-                out[n++] = (struct Token){TK_MINUSMINUS, p-1, 2, 0};
+                out[n++] = (struct Token){TK_MINUSMINUS, p-1, 2, {0} };
                 p++;
                 continue;
             }
-            out[n++] = (struct Token){TK_MINUS, p-1, 1, 0};
+            out[n++] = (struct Token){TK_MINUS, p-1, 1, {0} };
             continue;
         }
         if (*p == '*')
         {
-            out[n++] = (struct Token){TK_STAR, p, 1, 0};
+            out[n++] = (struct Token){TK_STAR, p, 1, {0} };
             p++;
             continue;
         }
         if (*p == '#')
         {
-            out[n++] = (struct Token){TK_HASH, p, 1, 0};
+            out[n++] = (struct Token){TK_HASH, p, 1, {0} };
             p++;
             continue;
         }
         if (*p == '~')
         {
-            out[n++] = (struct Token){TK_HASH, p, 1, 0};
+            out[n++] = (struct Token){TK_HASH, p, 1, {0} };
             p++;
             continue;
         }
@@ -144,10 +144,10 @@ size_t tokenize(const char *src, struct Token *out, struct Context *ctx) {
             p++;
             if (*p == '=')
             {
-                out[n++] = (struct Token){TK_BANGEQ, p-1, 2, 0};
+                out[n++] = (struct Token){TK_BANGEQ, p-1, 2, {0} };
                 continue;
             }
-            out[n++] = (struct Token){TK_BANG, p-1, 1, 0};
+            out[n++] = (struct Token){TK_BANG, p-1, 1, {0} };
             continue;
         }
         if (*p == '/')
@@ -160,7 +160,7 @@ size_t tokenize(const char *src, struct Token *out, struct Context *ctx) {
             }
             else
             {
-                out[n++] = (struct Token){TK_SLASH, p-1, 1, 0};
+                out[n++] = (struct Token){TK_SLASH, p-1, 1, {0} };
             }    
             continue;
         }
@@ -169,10 +169,10 @@ size_t tokenize(const char *src, struct Token *out, struct Context *ctx) {
             p++;
             if (*p == '=')
             {
-                out[n++] = (struct Token){TK_EQEQ, p-1, 2, 0};
+                out[n++] = (struct Token){TK_EQEQ, p-1, 2, {0} };
                 continue;
             }
-            out[n++] = (struct Token){TK_EQ, p-1, 1, 0};
+            out[n++] = (struct Token){TK_EQ, p-1, 1, {0} };
             continue;
         }
         if (*p == '&')
@@ -180,11 +180,11 @@ size_t tokenize(const char *src, struct Token *out, struct Context *ctx) {
             p++;
             if (*p == '&')
             {
-                out[n++] = (struct Token){TK_ANDAND, p-1, 2, 0};
+                out[n++] = (struct Token){TK_ANDAND, p-1, 2, {0} };
                 p++;
                 continue;
             }
-            out[n++] = (struct Token){TK_AND, p-1, 1, 0};
+            out[n++] = (struct Token){TK_AND, p-1, 1, {0} };
             continue;
         }
         if (*p == '|')
@@ -192,11 +192,11 @@ size_t tokenize(const char *src, struct Token *out, struct Context *ctx) {
             p++;
             if (*p == '|')
             {
-                out[n++] = (struct Token){TK_PIPEPIPE, p-1, 2, 0};
+                out[n++] = (struct Token){TK_PIPEPIPE, p-1, 2, {0} };
                 p++;
                 continue;
             }
-            out[n++] = (struct Token){TK_PIPE, p-1, 1, 0};
+            out[n++] = (struct Token){TK_PIPE, p-1, 1, {0} };
             continue;
         }
 
@@ -205,11 +205,11 @@ size_t tokenize(const char *src, struct Token *out, struct Context *ctx) {
             p++;
             if (*p == '=')
             {
-                out[n++] = (struct Token){TK_GREATEREQ, p-1, 2, 0};
+                out[n++] = (struct Token){TK_GREATEREQ, p-1, 2, {0} };
                 p++;
                 continue;
             }
-            out[n++] = (struct Token){TK_GREATER, p-1, 1, 0};
+            out[n++] = (struct Token){TK_GREATER, p-1, 1, {0} };
             continue;
         }
         if (*p == '<')
@@ -217,17 +217,17 @@ size_t tokenize(const char *src, struct Token *out, struct Context *ctx) {
             p++;
             if (*p == '=')
             {
-                out[n++] = (struct Token){TK_LESSEQ, p-1, 2, 0};
+                out[n++] = (struct Token){TK_LESSEQ, p-1, 2, {0} };
                 p++;
                 continue;
             }
-            out[n++] = (struct Token){TK_LESS, p-1, 1, 0};
+            out[n++] = (struct Token){TK_LESS, p-1, 1, {0} };
             continue;
         }
         if (*p == '\'')
         {
             p++;
-            if (!(*p > 0 && *p < 256) && *p != '\'')
+            if (!(*p > 0) && *p != '\'')
             {
                 fprintf(stderr, "Failed to parse char (0x%02x)\n", *p);
                 exit(1);
@@ -374,14 +374,14 @@ size_t tokenize(const char *src, struct Token *out, struct Context *ctx) {
                     *p == '_') {
                 p++;
             }
-            const char ident[12] = {0};
+            char ident[12] = {0};
             strncpy(ident, start, p-start);
-            out[n++] = (struct Token){ TK_IDENT, start, p - start, 0 };
+            out[n++] = (struct Token){ TK_IDENT, start, p - start, {0} };
             for (int i = 0; i < N_KEYWORDS; ++i)
             {
                 if (!strcmp(ident, keywords[i].name))
                 {
-                    out[n-1] = (struct Token){ keywords[i].kind, start, p - start, 0 };
+                    out[n-1] = (struct Token){ keywords[i].kind, start, p - start, {0} };
                     break;
                 }
             }
@@ -391,6 +391,6 @@ size_t tokenize(const char *src, struct Token *out, struct Context *ctx) {
         return 0;
     }
 
-    out[n++] = (struct Token){ TK_EOF, p, 0, 0 };
+    out[n++] = (struct Token){ TK_EOF, p, 0, {0} };
     return n;
 }

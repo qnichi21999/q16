@@ -65,7 +65,7 @@ int main(int argc, char *argv[]) {
     struct Token line[32];
 
     // preprocess
-    for(int i, n = 0; i < 65536; ++i)
+    for(int i = 0, n = 0; i < 65536; ++i)
     {
         if (tokens[i].kind == TK_EOF)
         {
@@ -89,7 +89,7 @@ int main(int argc, char *argv[]) {
     }
 
     // assemble
-    for(int i, n = 0; i < 65536; ++i)
+    for(int i = 0, n = 0; i < 65536; ++i)
     {
         if (tokens_pp[i].kind == TK_EOF) break;
         if (tokens_pp[i].kind == TK_EOL)

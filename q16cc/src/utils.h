@@ -1,6 +1,8 @@
 #ifndef UTILS_H
 #define UTILS_H
 #include "stddef.h"
+#include "codegen.h"
+#include "irgen.h"
 
 #define LIST_PUSH(arena, list, node, Type)                            \
     do {                                                              \

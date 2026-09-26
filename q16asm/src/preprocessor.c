@@ -10,7 +10,7 @@ size_t n_tokens_pp = 0;
 
 void preprocess_line(struct Context *ctx, struct Token *tokens, size_t len)
 {
-    for (int i = 0; i < len; ++i)
+    for (size_t i = 0; i < len; ++i)
     {
         if (tokens[i].kind == TK_PERCENT && i == 0)
         {
@@ -22,7 +22,7 @@ void preprocess_line(struct Context *ctx, struct Token *tokens, size_t len)
         {
             char name[32] = {0};
             memcpy(&name, tokens[i].start, tokens[i].len);
-            struct Define *define = find_define(&name);
+            struct Define *define = find_define(name);
             if (define)
             {
                 tokens_pp[n_tokens_pp] = define->value;

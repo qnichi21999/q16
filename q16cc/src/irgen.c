@@ -7,7 +7,7 @@
 const char *make_temp_name(struct IRGen *irgen)
 {
     char tmp[32];
-    int len = snprintf(tmp, sizeof(tmp), "tmp.%zu", irgen->temporary_id++);
+    snprintf(tmp, sizeof(tmp), "tmp.%zu", irgen->temporary_id++);
     char *result = arena_alloc(irgen->arena, 32);
     memcpy(result, tmp, 32);
     return result;
@@ -62,6 +62,29 @@ struct IRNode *emit_tac(struct IRGen *irgen, struct AstNode *ast_node, struct IR
         LIST_PUSH(irgen->arena, instructions, unary, struct IRNode);
         return dst;
     }
+    else if (ast_node->kind == AST_BINARY_EXPR)
+    {
+        struct IRNode *src1 = emit_tac(irgen, ast_node->binary_expr.lhs, instructions);
+        struct IRNode *src2 = emit_tac(irgen, ast_node->binary_expr.rhs, instructions);
+        struct IRNode *dst = make_ir_temp(irgen);
+
+        struct IRNode *binary = arena_alloc(irgen->arena, sizeof(*binary));
+        *binary = (struct IRNode) {
+            .kind = IR_INSTRUCTION,
+            .instruction = {
+                .kind = I_BINARY,
+                .i_binary = {
+                    .src1 = src1->val.value,
+                    .src2 = src2->val.value,
+                    .dst = dst->val.value,
+                    .op = ast_node->binary_expr.op
+                }
+            }
+        };
+        LIST_PUSH(irgen->arena, instructions, binary, struct IRNode);
+        return dst;
+    }
+    return NULL;
 }
 
 void emit_return(struct IRGen *irgen, struct IRNode *dst, struct IRNodeList *instructions)

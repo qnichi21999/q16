@@ -1,10 +1,11 @@
 #ifndef ARENA_H
 #define ARENA_H
 #include "stddef.h"
+#include "stdint.h"
 
 
 struct Arena {
-    char *data;
+    uint8_t *data;
     size_t capacity;
     size_t used;
 };
