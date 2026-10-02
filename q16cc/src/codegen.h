@@ -31,7 +31,13 @@ enum AsmInstructionKind {
     ASM_I_LOAD,
     ASM_I_STORE,
     ASM_I_SET,
-    ASM_I_RET
+    ASM_I_RET,
+    ASM_I_CALL,
+    ASM_I_BINARY,
+    ASM_I_LABEL,
+    ASM_I_JE,
+    ASM_I_JG,
+    ASM_I_JMP
 };
 
 struct AsmNodeList {
@@ -108,8 +114,32 @@ struct AsmNode {
                     struct Operand *operand;
                 } unary;
                 struct {
+                    enum TokenKind operator;
+                    struct Operand *loperand;
+                    struct Operand *roperand;
+                } binary;
+                struct {
                     size_t size;
                 } allocate_stack;
+                struct {
+                    char *name;
+                } call;
+                struct {
+                    struct Operand *src;
+                    struct Operand *dst;
+                    struct AsmNode *target;
+                } je;
+                struct {
+                    struct Operand *src;
+                    struct Operand *dst;
+                    struct AsmNode *target;
+                } jg;
+                struct {
+                    struct AsmNode *target;
+                } jmp;
+                struct {
+                    char *name;
+                } label;
             };
         } instruction;
     };

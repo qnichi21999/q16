@@ -8,6 +8,7 @@ struct IRGen {
     struct AstNode *ast;
     struct Arena *arena;
     size_t temporary_id;
+    size_t label_id;
 };
 
 enum IRKind {
@@ -20,15 +21,20 @@ enum IRKind {
 enum IRInstructionKind {
     I_RETURN,
     I_UNARY,
-    I_BINARY
+    I_BINARY,
+    I_COPY,
+    I_JMP,
+    I_JZ,
+    I_JNZ,
+    I_JG,
+    I_JE,
+    I_LABEL
 };
 
 enum VarKind {
     V_INT,
     V_VAR
 };
-
-struct IRNode;
 
 struct IRNodeList {
     struct IRNode **items;
@@ -76,6 +82,36 @@ struct IRNode {
                 struct {
                     struct Var return_value;
                 } i_return;
+
+                struct {
+                    struct Var src;
+                    struct Var dst;
+                } i_copy;
+
+                struct {
+                    struct IRNode *target;
+                } i_jmp;
+
+                struct {
+                    struct Var src;
+                    struct IRNode *target;
+                } i_jz;
+
+                struct {
+                    struct Var src;
+                    struct Var dst;
+                    struct IRNode *target;
+                } i_je;
+
+                struct {
+                    struct Var src;
+                    struct Var dst;
+                    struct IRNode *target;
+                } i_jg;
+
+                struct {
+                    char *name;
+                } i_label;
             };
         } instruction;
         

@@ -160,7 +160,7 @@ void print_asm_ir(struct AsmNode *node, size_t tab_count)
             }
             else if (node->instruction.kind == ASM_I_SET)
             {
-                printf("SET");
+                printf("SET ");
                 print_operand(node->instruction.set.reg);
                 printf(" ");
                 print_operand(node->instruction.set.imm);
@@ -173,6 +173,14 @@ void print_asm_ir(struct AsmNode *node, size_t tab_count)
                 printf(" ");
                 print_operand(node->instruction.unary.operand);
                 printf("\n");
+            }
+            else if (node->instruction.kind == ASM_I_BINARY)
+            {
+                printf("BINARY \n");
+            }
+            else if (node->instruction.kind == ASM_I_CALL)
+            {
+                printf("CALL %s\n", node->instruction.call.name);
             }
             else if (node->instruction.kind == ASM_I_RET)
             {
